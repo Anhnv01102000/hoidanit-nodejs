@@ -1,12 +1,7 @@
 import bcrypt from 'bcryptjs';
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
+import bluebird from 'bluebird';
 
-// create the connection to database
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'hoidanit-nodejs'
-});
 
 var salt = bcrypt.genSaltSync(10);
 const hashUserPassword = (userPassword) => {
@@ -27,17 +22,30 @@ const createNewUser = (email, password, username) => {
     );
 }
 
-const getListUser = () => {
+const getListUser = async () => {
+    // create the connection, specify bluebird as Promise
+    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+
     let users = []
-    connection.query(
-        'SELECT*FROM users',
-        function (err, results, fields) {
-            if (err) {
-                console.log(err);
-            }
-            console.log("Check result: ", results);
-        }
-    );
+    // return connection.query(
+    //     'SELECT*FROM users',
+    //     function (err, results, fields) {
+    //         if (err) {
+    //             console.log(err);
+    //             return users
+    //         }
+    //         users = results
+    //         return results
+    //     }
+    // );
+
+    try {
+        const [rows, fields] = await connection.execute('SELECT * FROM users');
+        return rows
+    } catch (error) {
+        console.log(">>> Check error: ", error);
+    }
+
 }
 
 module.exports = {
