@@ -9,17 +9,17 @@ const hashUserPassword = (userPassword) => {
     return hassPassword
 }
 
-const createNewUser = (email, password, username) => {
+const createNewUser = async (email, password, username) => {
     let hashPass = hashUserPassword(password)
-    // simple query
-    connection.query(
-        'INSERT INTO users(email, password, username) VALUES (?,?,?)', [email, hashPass, username],
-        function (err, results, fields) {
-            if (err) {
-                console.log(err);
-            }
-        }
-    );
+    // create the connection, specify bluebird as Promise
+    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+    try {
+        const [rows, fields] =
+            await connection.execute('INSERT INTO users(email, password, username) VALUES (?,?,?)',
+                [email, hashPass, username]);
+    } catch (error) {
+        console.log(">>>Check error: ", error);
+    }
 }
 
 const getListUser = async () => {
@@ -27,17 +27,6 @@ const getListUser = async () => {
     const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
 
     let users = []
-    // return connection.query(
-    //     'SELECT*FROM users',
-    //     function (err, results, fields) {
-    //         if (err) {
-    //             console.log(err);
-    //             return users
-    //         }
-    //         users = results
-    //         return results
-    //     }
-    // );
 
     try {
         const [rows, fields] = await connection.execute('SELECT * FROM users');
@@ -45,10 +34,20 @@ const getListUser = async () => {
     } catch (error) {
         console.log(">>> Check error: ", error);
     }
+}
 
+const deleteUser = async (id) => {
+    // create the connection, specify bluebird as Promise
+    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+
+    try {
+        const [rows, fields] = await connection.execute('DELETE FROM users WHERE id=?', [id]);
+    } catch (error) {
+        console.log(">>> Check error: ", error);
+    }
 }
 
 module.exports = {
-    createNewUser, getListUser
+    createNewUser, getListUser, deleteUser
 }
 

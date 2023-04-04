@@ -4,13 +4,6 @@ const handleHelloWorld = (req, res) => {
     return res.render("home.ejs")
 }
 
-const handleUserPage = async (req, res) => {
-    // model => get data from database
-    let userList = await userService.getListUser();
-
-    return res.render("user.ejs", { userList })
-}
-
 const handleCreateNewUser = (req, res) => {
     let email = req.body.email
     let password = req.body.password
@@ -18,9 +11,22 @@ const handleCreateNewUser = (req, res) => {
 
     userService.createNewUser(email, password, username)
 
-    return res.send("handleCreateNewUser")
+    return res.redirect("/user")
+}
+
+const handleUserPage = async (req, res) => {
+    // model => get data from database
+    let userList = await userService.getListUser();
+    await userService.deleteUser(9)
+
+    return res.render("user.ejs", { userList })
+}
+
+const handleDeleteUser = async (req, res) => {
+    await userService.deleteUser(req.params.id)
+    return res.redirect("/user")
 }
 
 module.exports = {
-    handleHelloWorld, handleUserPage, handleCreateNewUser
+    handleHelloWorld, handleUserPage, handleCreateNewUser, handleDeleteUser
 }
