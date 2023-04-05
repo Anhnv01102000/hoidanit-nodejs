@@ -47,7 +47,31 @@ const deleteUser = async (id) => {
     }
 }
 
+const getUserById = async (id) => {
+    // create the connection, specify bluebird as Promise
+    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+
+    try {
+        const [rows, fields] = await connection.execute('SELECT * FROM users WHERE id=?', [id]);
+        return rows
+    } catch (error) {
+        console.log(">>> Check error: ", error);
+    }
+}
+
+const updateUser = async (email, username, id) => {
+    // create the connection, specify bluebird as Promise
+    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+    try {
+        const [rows, fields] =
+            await connection.execute('UPDATE users SET email=?, username=? WHERE id=?',
+                [email, username, id]);
+    } catch (error) {
+        console.log(">>>Check error: ", error);
+    }
+}
+
 module.exports = {
-    createNewUser, getListUser, deleteUser
+    createNewUser, getListUser, deleteUser, getUserById, updateUser
 }
 
