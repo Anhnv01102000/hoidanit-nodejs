@@ -24,52 +24,68 @@ const createNewUser = async (email, password, username) => {
 }
 
 const getListUser = async () => {
-    // create the connection, specify bluebird as Promise
-    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+    let users = []
+    users = await db.User.findAll()
+    return users
 
-    let user = []
+    // // create the connection, specify bluebird as Promise
+    // const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
 
-    try {
-        const [rows, fields] = await connection.execute('SELECT * FROM user');
-        return rows
-    } catch (error) {
-        console.log(">>> Check error: ", error);
-    }
+    // try {
+    //     const [rows, fields] = await connection.execute('SELECT * FROM user');
+    //     return rows
+    // } catch (error) {
+    //     console.log(">>> Check error: ", error);
+    // }
 }
 
 const deleteUser = async (id) => {
-    // create the connection, specify bluebird as Promise
-    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+    await db.User.destroy({
+        where: { id: id }
+    })
 
-    try {
-        const [rows, fields] = await connection.execute('DELETE FROM user WHERE id=?', [id]);
-    } catch (error) {
-        console.log(">>> Check error: ", error);
-    }
+    // // create the connection, specify bluebird as Promise
+    // const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+
+    // try {
+    //     const [rows, fields] = await connection.execute('DELETE FROM user WHERE id=?', [id]);
+    // } catch (error) {
+    //     console.log(">>> Check error: ", error);
+    // }
 }
 
 const getUserById = async (id) => {
-    // create the connection, specify bluebird as Promise
-    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+    let user = {}
+    user = await db.User.findOne({
+        where: { id: id }
+    })
+    return user.get({ plain: true })
 
-    try {
-        const [rows, fields] = await connection.execute('SELECT * FROM user WHERE id=?', [id]);
-        return rows
-    } catch (error) {
-        console.log(">>> Check error: ", error);
-    }
+    // // create the connection, specify bluebird as Promise
+    // const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+
+    // try {
+    //     const [rows, fields] = await connection.execute('SELECT * FROM user WHERE id=?', [id]);
+    //     return rows
+    // } catch (error) {
+    //     console.log(">>> Check error: ", error);
+    // }
 }
 
 const updateUser = async (email, username, id) => {
-    // create the connection, specify bluebird as Promise
-    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
-    try {
-        const [rows, fields] =
-            await connection.execute('UPDATE user SET email=?, username=? WHERE id=?',
-                [email, username, id]);
-    } catch (error) {
-        console.log(">>>Check error: ", error);
-    }
+    await db.User.update(
+        { email: email, username: username },
+        { where: { id: id } }
+    )
+    // // create the connection, specify bluebird as Promise
+    // const connection = await mysql.createConnection({ host: 'localhost', user: 'root', database: 'hoidanit-nodejs', Promise: bluebird });
+    // try {
+    //     const [rows, fields] =
+    //         await connection.execute('UPDATE user SET email=?, username=? WHERE id=?',
+    //             [email, username, id]);
+    // } catch (error) {
+    //     console.log(">>>Check error: ", error);
+    // }
 }
 
 module.exports = {
