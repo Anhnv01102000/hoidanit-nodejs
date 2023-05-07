@@ -18,6 +18,14 @@ const handleRegister = async (req, res) => {
             })
         }
 
+        if (req.body.password && req.body.password.length < 4) {
+            return res.status(200).json({
+                EM: 'Your password must have more than 3 letter', // error message
+                EC: '1', // error code
+                DT: '' // data
+            })
+        }
+
         // service: Create user
         let data = await registerService.registerNewUser(req.body)
 
