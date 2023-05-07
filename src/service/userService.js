@@ -4,10 +4,10 @@ import bluebird from 'bluebird';
 import db from '../models';
 
 
-var salt = bcrypt.genSaltSync(10);
+const salt = bcrypt.genSaltSync(10);
 const hashUserPassword = (userPassword) => {
-    let hassPassword = bcrypt.hashSync(userPassword, salt);
-    return hassPassword
+    let hashPassword = bcrypt.hashSync(userPassword, salt);
+    return hashPassword
 }
 
 const createNewUser = async (email, password, username) => {
